@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Maptek ranking system - Home</title>
+    <link rel="icon" href="img/maptek.jpg" type="image/png">
+    <link rel="stylesheet" href="vendors/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="vendors/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery.metisMenu.js"></script>
+    <script src="js/jquery.slimscroll.min.js"></script>
+    <script src="vendors/jquery/jquery-3.2.1.min.js"></script>
+    <script src="vendors/bootstrap/bootstrap.bundle.min.js"></script>
+    <audio id="admin_logout" src="sound/Windows XP Hardware Remove.wav" ></audio>
+
+    <script src="vendors/sweetalert2/dist/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="vendors/sweetalert2/dist/sweetalert2.min.css">
+
+    <script type="text/javascript">
+
+        window.onload = function() {
+          getoverview()
+          getTable();
+        }
+
+        function user_comp(){
+          var user_c = $("#user_c").val();
+          var data = {"user_c": user_c};
+          $.ajax({
+              url:'/user/user_comp',
+              type:'POST',
+              data:data,
+              success:function(res){
+                out = res.data
+                if (res.data == null || res.data == "undefined"){
+                  alert("Competition Not Exist")
+                } else{
+                  location.href = `./competitionInfo.html?competitionId=${res.data}`;
+                }
+              },
+              error:function(res,e){
+                  alert("Failed")
+              }
+          });
+        }
+
+        function user_comp_info(){
+          var user_rank = ""
+          $("#mbody").empty();
+          var mbody = $("#mbody");
+          var user_n = $("#user_n").val();
+          var comp_n = $("#comp_n").val();
+          var data = {"user_n": user_n,"comp_n": comp_n};
+          $.ajax({
+              url:'/user/user_comp_info',
+              type:'POST',
+              data:data,
+              success:function(res){
+                out = res.data
+                if (res.data == null || res.data == "undefined"){
+                  $("#mbody").empty();
+                  alert("Competition/User Not Exist")
+                } else{
+                  user_mark =`<tr>
+                                <td>${out[0].correct_mark}</td>
+                                <td>${out[0].time_mark}   </td>
+                                <td>${out[0].memory_mark} </td>
+                                <td>${out[0].final_mark}  </td>
+                                <td>${out[0].best_mark}   </td>
+                              </tr>`
+                }
+                mbody.append(user_mark)
+              },
+              error:function(res,e){
+                  alert("Failed")
+              }
+          });
+        }
+
+
+        function getoverview(){
+          var trHtml = "";
+          var tbody = $("#tbody");
+          $.ajax({
+              url:'/user/total',
+              type:'get',
+              success:function(res){
+                trHtml = `<tr>
+                            <td class="table-text">Total number of competitions</td>
+                            <td class="table-text">${res.data}</td>
+                          </tr>`
+                tbody.append(trHtml);
+              },
+              error:function(res,e){
+                  alert("Failed")
+              }
+          });
+        }
+
+        function getTable(){
+            var trHtml = "";
+            var tbody = $("#admintBody");
+            $.ajax({
+                url: '/getCompetition',
+                type: 'get',
+                success: function (res) {
+                    if (res.code == -1) {
+                        location.href = './login.html';
+                    } else {
+                        let data = res.data;
+                        if(data.length){
+                            for (let i = 0; i < data.length; i++) {
+                                trHtml += ` <tr class="table-row" style="cursor: pointer;">
+                <td class="table-text">
+                <h6 style="font-weight: bold;cursor: pointer;">${data[i].title} </h6>
+            </td>
+            <td class="march">
+                ${data[i].duetime}
+            </td>
+            <td>
+                <span class="fam" style="cursor: pointer;color: #333;" onclick="deleteLi(${data[i].id})">Delete</span>
+            </td>
+            <td >
+            <i class="fa fa-star-half-o icon-state-warning"></i>
+
+                </td>
+                </tr>`
+                            }
+                        }else{
+                            trHtml = "";
+                        }
+                        tbody.html(trHtml);
+                    }
+                },
+                error: function (res, status, e) {
+                    if (status == "error") {
+                        location.href = './login.html';
+                    }
+                }
+            });
+        }
+        function liClick(li) {
+            let content = $(".content-top");
+            for (let i = 0; i <content.length ; i++) {
+                content[i].style.display = "none";
+            }
+            if(li == 'Dashboard'){
+                $('#CompetitionsBar').css("display","none");
+            }
+
+            $(`#${li}Bar`).css("display","block");
+            $("#url").html(li);
+        }
+
+        function deleteLi(id){
+            var data = {"id": id};
+
+            $.ajax({
+                url: '/getCompetition/delete',
+                type: 'POST',
+                data: data,
+                success: function (res) {
+
+                    if (res.code == -1) {
+                        alert(res.msg);
+                    } else {
+                        getTable();
+                    }
+                },
+                error: function (res, status, e) {
+                    if (status == "error") {
+                        location.href = './login.html';
+                    }
+                }
+            });
+        }
+
+        function insertCompetition() {
+            let titleInput = $("#titleInput").val();
+            let duetimeInput = $("#duetimeInput").val();
+            // let rankInput = $("#rankInput").val();
+            let descriptionInput = $("#descriptionInput").val();
+
+            var data = {"title": titleInput,"duetime": duetimeInput,"description": descriptionInput};
+            $.ajax({
+                url: '/getCompetition/insert',
+                type: 'POST',
+                data: data,
+                success: function (res) {
+
+                    if (res.code == -1) {
+                        alert(res.msg);
+                    } else {
+                        getTable();
+                        $("#myModal").modal('hide');
+                    }
+                },
+                error: function (res, status, e) {
+                    if (status == "error") {
+                        location.href = './login.html';
+                    }
+                }
+            });
+        }
+
+        function logout(){
+          $.ajax({
+              url:'/user/logout',
+              type:'get',
+              success:function(res){
+                var audio = document.getElementById("admin_logout");
+                audio.play();
+                Swal.fire({
+                  type: 'success',
+                  title: res.msg,
+                  showConfirmButton: false,
+                  timer: 1500
+                }).then(()=>location.href = `./index.html`)
+              },
+              error:function(res,e){
+                  alert("Failed")
+              }
+          });
+        }
+
+    </script>
+</head>
+<body>
+
+
+<!--================ Body start =================-->
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <nav id="spy">
+            <ul class="sidebar-nav nav">
+                <li class="sidebar-brand">
+                    <a href="index.html"><span class="fa fa-home solo">Home</span></a>
+                </li>
+                <li>
+                    <a style="color: #000;" data-scroll href="admin.html">
+                        <span class="fas fa-tachometer-alt solo">Dashboard</span>
+                    </a>
+                </li>
+                <li id="competitions">
+                    <a  style="color: #000;" data-scroll  onclick="liClick('Competitions')">
+                        <span class="fa fa-indent solo">Competitions</span>
+                    </a>
+                </li>
+                <!-- <li>
+                    <a  href="search.html" style="color: #000;" data-scroll>
+                        <span class="fa fa-th solo">Search User</span>
+                    </a>
+                </li> -->
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Page content -->
+    <div class="banner">
+        <h2>
+            <a href="index.html">Home</a>
+            <i class="fa fa-angle-right"></i>
+            <span id="url">Dashboard</span>
+        </h2>
+        <div class="drop-men" >
+            <ul class=" nav_1">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle dropdown-at" data-toggle="dropdown">
+                        <span class=" name-caret">BALEX<i class="caret"></i></span>
+                        <img src="img/BALEX.jpg" alt="user">
+                    </a>
+                    <ul class="dropdown-menu " role="menu">
+                        <li><a href="index.html"><i class="fa fa-user"></i>Home</a></li>
+                        <li><a href="competition.html"><i class="fa fa-envelope"></i>Competitions</a></li>
+                        <!-- <li><a href="search.html"><i class="fa fa-calendar"></i>Search User</a></li> -->
+                        <li><a href="javascript:logout();"><i class="fa fa-calendar"></i>Signout</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+
+
+    </div>
+    <!--//banner-->
+    <!--content-->
+    <div class="content-top">
+      <div class="col-md-10 ">
+          <div class="content-top-1">
+              <div class="col-md-10 top-content">
+                  <h5>Overview</h5>
+                  <table>
+                      <col width="300">
+                      <col width="200 ">
+                      <tbody id="tbody">
+                      </tbody>
+                  </table>
+              </div>
+              <div class="col-md-6 top-content1">
+                  <div id="demo-pie-1" class="pie-title-center" data-percent="25"> <span class="pie-value"></span> </div>
+              </div>
+              <div class="clearfix"> </div>
+          </div>
+
+          <div class="content-top-1">
+              <div class="col-md-11 top-content">
+                  <h5>Search Competition</h5>
+                  <input type="text" id="user_n"  name="input" placeholder="Username..">
+                  <input type="text" id="comp_n"  name="input" placeholder="Competition..">
+                  <input type="submit" value="Search" onclick="user_comp_info()">
+
+                  <table>
+                      <col width="200">
+                      <col width="200">
+                      <col width="200">
+                      <col width="200">
+                      <tr>
+                        <th>Correct Mark</th>
+                        <th>Time Mark</th>
+                        <th>Memory Mark</th>
+                        <th>Final Mark</th>
+                        <th>Best Mark</th>
+                      </tr>
+                      <tbody id="mbody">
+                      </tbody>
+                  </table>
+              </div>
+
+
+              <div class="col-md-6 top-content1">
+                  <div id="demo-pie-1" class="pie-title-center" data-percent="25"> <span class="pie-value"></span> </div>
+              </div>
+              <div class="clearfix"> </div>
+          </div>
+
+          <div class="content-top-1">
+              <div class="col-md-10 top-content">
+                  <h5>Search Competition</h5>
+                  <input type="text" id="user_c"  name="input" placeholder="Search..">
+                  <input type="submit" value="Search" onclick="user_comp()">
+                  <table>
+                      <col width="300">
+                      <col width="200 ">
+                      <tbody id="ucbody">
+                      </tbody>
+                  </table>
+              </div>
+              <div class="col-md-6 top-content1">
+                  <div id="demo-pie-1" class="pie-title-center" data-percent="25"> <span class="pie-value"></span> </div>
+              </div>
+              <div class="clearfix"> </div>
+          </div>
+
+
+      </div>
+    </div>
+
+    <div id="CompetitionsBar" class="Content-top" style="display: none;">
+        <div style="margin: 1em 1em;">
+            <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-primary">Add</button>
+        </div>
+        <table style="padding:1em;margin: 1em 1em;border: 1px solid #ccc;">
+
+            <tbody id="admintBody">
+
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="modal fade " id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-top: 10px;"><span style="display: inline-block;width: 80px;">title</span><input id="titleInput" type="text" style="display: inline-block;width: 200px;"></div>
+                    <div style="margin-top: 10px;"><span style="display: inline-block;width: 80px;">duetime</span><input id="duetimeInput" type="text" style="display: inline-block;width: 200px;"></div>
+                    <!-- <div style="margin-top: 10px;"><span style="display: inline-block;width: 80px;">rank</span><input id="rankInput" type="text" style="display: inline-block;width: 200px;"></div> -->
+                    <div style="margin-top: 10px;display: flex;"><span style="display: inline-block;width: 80px;">description</span><textarea  id="descriptionInput" style="display: inline-block;width: 200px;height: 200px;resize: none;"></textarea></div>
+                </div>
+                <div class="modal-footer">
+
+                    <button class="btn btn-primary" type="button" onclick="insertCompetition()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!--================ Body end =================-->
+
+
+</body>
+</html>

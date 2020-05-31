@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Maptek ranking system - Home</title>
+        <link rel="icon" href="img/maptek.jpg" type="image/png">
+        <link rel="stylesheet" href="vendors/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="vendors/fontawesome/css/all.min.css">
+        <link rel="stylesheet" href="vendors/fontawesome/css/animate.min.css">
+
+
+        <link rel="stylesheet" href="css/style.css">
+        <script type="text/javascript">
+
+
+            window.onload = function() {
+                var trHtml = "";
+                var tbody = $("#tbody");
+                $.ajax({
+                    url: '/getCompetition',
+                    type: 'get',
+                    success: function (res) {
+                        if (res.code == -1) {
+                            location.href = './login.html';
+                        } else {
+                            let data = res.data;
+                            if(data.length){
+                                for (let i = 0; i < data.length; i++) {
+                                    trHtml += ` <tr class="table-row" style="cursor: pointer;" onclick="locationHtml(${data[i].id})">
+                <td class="table-img"  >
+                <img src="img/logo.jpg" alt="" />
+                </td>
+                <td class="table-text">
+                <h6 style="font-weight: bold;cursor: pointer;">${data[i].title} </h6>
+            </td>
+
+            <td class="march">
+                ${data[i].duetime}
+            </td>
+
+            <td >
+            <i class="fa fa-star-half-o icon-state-warning"></i>
+
+                </td>
+                </tr>`
+                                }
+                            }else{
+                                trHtml = "";
+                            }
+                            tbody.append(trHtml);
+                        }
+                    },
+                    error: function (res, status, e) {
+                        if (status == "error") {
+                            location.href = './login.html';
+                        }
+                    }
+                });
+            }
+            //  Enter selected chal
+            function locationHtml(id){
+                location.href = `./competitionInfo.html?competitionId=${id}`;
+            }
+
+            function user_comp(){
+              var user_c = $("#user_c").val();
+              var data = {"user_c": user_c};
+              $.ajax({
+                  url:'/user/user_comp',
+                  type:'POST',
+                  data:data,
+                  success:function(res){
+                    out = res.data
+                    if (res.data == null || res.data == "undefined"){
+                      Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: "Competition Not Exist",
+                        showConfirmButton: true,
+                        timer: 3000
+                      })
+                    } else{
+                      location.href = `./competitionInfo.html?competitionId=${res.data}`;
+                    }
+                  },
+                  error:function(res,e){
+                      alert("Failed")
+                  }
+              });
+            }
+
+        </script>
+    </head>
+    <body>
+
+        <!--================ Header Menu Area start =================-->
+        <header class="header_area">
+            <div class="main_menu">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <div class="container box_1620">
+                        <a class="navbar-brand logo_h" href="index.html"><img src="img/maptek.jpg" alt=""></a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+
+                        <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                            <ul class="nav navbar-nav menu_nav justify-content-end">
+                                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                                <li class="nav-item active"><a class="nav-link" href="competition.html">Competitions</a></li>
+                                <li class="nav-item"><a class="nav-link" href="user.html">Dashboard</a>
+                                <li class="nav-item"><a class="nav-link" href="about.html">About us</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+        <!--================Header Menu Area =================-->
+
+        <!--================ Hero sm Banner start =================-->
+        <section class="hero-banner hero-banner--sm">
+            <div class="hero-banner__content text-center">
+                <h1>Competition</h1>
+                <nav aria-label="breadcrumb" class="banner-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    </ol>
+                </nav>
+                <div class="text-center">
+                  <input type="text" id="user_c" size="35" name="input" placeholder="Search..">
+                  <input type="submit" value="Search" onclick="user_comp()">
+                </div>
+            </div>
+
+        </section>
+
+
+
+
+
+
+
+
+        <!--================ Hero sm Banner end =================-->
+        <div id="wrapper">
+            <table class="table">
+                <tbody id="tbody">
+
+                </tbody>
+            </table>
+        </div>
+        <!-- ================ start footer Area ================= -->
+        <footer class="footer-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6 col-sm-6">
+                        <div class="single-footer-widget">
+                            <h6>Navigation Links</h6>
+                            <div class="row">
+                                <div class="col">
+                                    <ul>
+                                        <li><a href="index.html">Home</a></li>
+                                        <li><a href="competition.html">Competitions</a></li>
+                                        <!-- <li><a href="ranking.html">Ranking</a></li> -->
+                                        <li><a href="about.html">About us</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-4 col-sm-12 footer-social text-center text-lg-right">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- ================ End footer Area ================= -->
+
+        <script src="vendors/jquery/jquery-3.2.1.min.js"></script>
+        <script src="vendors/bootstrap/bootstrap.bundle.min.js"></script>
+        <script src="vendors/sweetalert2/dist/sweetalert2.min.js"></script>
+        <link rel="stylesheet" href="vendors/sweetalert2/dist/sweetalert2.min.css">
+    </body>
+</html>

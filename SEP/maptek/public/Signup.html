@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Maptek ranking system - Home</title>
+    <link rel="icon" href="img/maptek.jpg" type="image/png">
+
+    <link rel="stylesheet" href="vendors/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="vendors/fontawesome/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+    <script type="text/javascript">
+        function register(e){
+            e.preventDefault();
+            var email = $('#email').val();
+            var username = $('#username').val();
+            var password = $('#password').val();
+            var password2 = $('#password2').val();
+            var data = { "email": email, "username":username, "password":password, "password2":password2};
+            $.ajax({
+                url:'/user/register',
+                type:'POST',
+                data:data,
+                success:function(data, status){
+                    if(data.code == -1){
+                      Swal.fire({
+                        type: 'error',
+                        title: 'Oops...',
+                        text: data.msg,
+                        showConfirmButton: false,
+                        timer: 2000
+                      }).then(()=>location.href='./Signup.html')
+
+                    } else {
+                      Swal.fire({
+                        type: 'success',
+                        title: data.msg,
+                        showConfirmButton: false,
+                        timer: 2500
+                      }).then(()=>window.location.href = './login.html')
+
+                    }
+                },
+                error:function(data,status,e){
+                    if(status == "error"){
+                        location.href='./Signup.html';
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+
+<!--================ Header Menu Area start =================-->
+<header class="header_area">
+    <div class="main_menu">
+        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+            <div class="container box_1620">
+                <a class="navbar-brand logo_h" href="index.html"><img src="img/maptek.jpg" alt=""></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav menu_nav justify-content-end">
+                        <li class="nav-item active"><a class="nav-link" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="competition.html">Competitions</a></li>
+                        <!-- <li class="nav-item"><a class="nav-link" href="ranking.html">Ranking</a></li> -->
+                        <li class="nav-item"><a class="nav-link" href="about.html">About us</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
+<!--================Header Menu Area =================-->
+
+<!-- ================ start body Area ================= -->
+<div class="login">
+    <h1><a href="index.html">Maptek</a></h1>
+    <div class="login-bottom container">
+        <h2>Register</h2>
+        <div class="row">
+        <div class="col-md-6">
+            <div class="login-mail">
+                <input type="text" id="email" placeholder="Email" required="">
+                <i class="fa fa-envelope"></i>
+            </div>
+            <div class="login-mail">
+                <input type="text" id="username" placeholder="Username" required="">
+                <i class="fa fa-envelope"></i>
+            </div>
+            <div class="login-mail">
+                <input type="password" id="password" placeholder="Password" required="">
+                <i class="fa fa-lock"></i>
+            </div>
+            <div class="login-mail">
+                <input type="password" id="password2" placeholder="Repeated password" required="">
+                <i class="fa fa-lock"></i>
+            </div>
+            <a class="news-letter" href="#">
+                <label class="checkbox1"><input type="checkbox" name="checkbox" ><i> </i>I agree with the terms</label>
+            </a>
+
+        </div>
+        <div class="col-md-6 login-do">
+            <label class="hvr-shutter-in-horizontal login-sub">
+                <input type="submit" value="Submit" onclick="register(event)">
+            </label>
+            <p>Already register</p>
+            <a href="Signup.html" class="hvr-shutter-in-horizontal">Login</a>
+        </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<!-- ================ end body Area ================= -->
+
+
+<!-- ================ start footer Area ================= -->
+<footer class="footer-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="single-footer-widget">
+                    <h6>Navigation Links</h6>
+                    <div class="row">
+                        <div class="col">
+                            <ul>
+                                <li><a href="index.html">Home</a></li>
+                                <li><a href="competition.html">Competitions</a></li>
+                                <!-- <li><a href="ranking.html">Ranking</a></li> -->
+                                <li><a href="about.html">About us</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-4 col-sm-12 footer-social text-center text-lg-right">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- ================ End footer Area ================= -->
+
+  <script src="vendors/jquery/jquery-3.2.1.min.js"></script>
+  <script src="vendors/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="vendors/owl-carousel/owl.carousel.min.js"></script>
+  <script src="vendors/Magnific-Popup/jquery.magnific-popup.min.js"></script>
+  <script src="js/jquery.ajaxchimp.min.js"></script>
+  <script src="js/mail-script.js"></script>
+  <script src="js/main.js"></script>
+  <script src="vendors/sweetalert2/dist/sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="vendors/sweetalert2/dist/sweetalert2.min.css">
+
+</body>
+</html>
